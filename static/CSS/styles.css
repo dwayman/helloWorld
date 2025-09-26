@@ -1,0 +1,31 @@
+p {
+    font-family: 'fangsong', Dubai;
+    font-size: 20px;
+}
+
+h2 {
+    font-family: 'fangsong', Dubai;
+    font-size: 25px;;
+}
+
+table {
+    border-style: solid;
+    border-color: darkgray;
+}
+
+h1 {
+    font-family: 'fangsong', Dubai;
+    text-align: center;
+    font-weight: bold;}
+
+#element_css {
+    font-family: 'fangsong', Dubai;
+    text-shadow: 2px 2px 2px black;
+    background-color: lightgrey;}
+
+.disclaimer {text-align: center;}
+
+img.logo {
+    width: 200px;
+    height: 200px;
+}
