@@ -10,7 +10,6 @@ paragraphOne.id = 'id_1p';
 paragraphOne.textContent = 'What kind of tree fits in your hand?'
 
 const button = document.createElement('button');
-button.id = 'id_1b';
 button.textContent = 'Click me';
 button.addEventListener('click', () => {
     paragraphOne.textContent = 'A palm tree ;) ';

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filterable Gallery System</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .controls {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .checkbox-group {
+            margin: 15px 0;
+        }
+        
+        .checkbox-group label {
+            display: inline-block;
+            margin-right: 20px;
+            cursor: pointer;
+        }
+        
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        
+        button:hover {
+            background: #0056b3;
+        }
+        
+        #will_be_hidden {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border: 1px solid #ffc107;
+        }
+        
+        #gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .gallery-item {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 150px;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .gallery-item.hidden {
+            display: none;
+        }
+        
+        .gallery-item:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transform: translateY(-2px);
+        }
+        
+        .item-info {
+            font-size: 12px;
+            color: #666;
+            margin-top: 10px;
+        }
+        
+        .item-title {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #007bff;
+        }
+        
+        .pdf-link {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 12px;
+            display: inline-block;
+            margin-top: 8px;
+        }
+        
+        .pdf-link:hover {
+            text-decoration: underline;
+        }
+        
+        .upload-section {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        
+        input[type="text"], select {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        h2 {
+            margin-top: 30px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Filterable Gallery System</h1>
+    
+    <div class="controls">
+        <h2 style="margin-top: 0;">Controls</h2>
+        
+        <button id="create_new">Hide Warning Message</button>
+        
+        <div id="will_be_hidden">
+            <strong>⚠️ Warning:</strong> This message will be hidden when you click the button above.
+        </div>
+        
+        <div class="checkbox-group">
+            <h3>Filter by Industry:</h3>
+            <label>
+                <input type="checkbox" class="industry_checkbox" value="tech"> Technology
+            </label>
+            <label>
+                <input type="checkbox" class="industry_checkbox" value="finance"> Finance
+            </label>
+            <label>
+                <input type="checkbox" class="industry_checkbox" value="healthcare"> Healthcare
+            </label>
+            <label>
+                <input type="checkbox" class="industry_checkbox" value="retail"> Retail
+            </label>
+            <label>
+                <input type="checkbox" class="industry_checkbox" value="education"> Education
+            </label>
+        </div>
+        
+        <button id="create-gallery">Create Gallery with Filters</button>
+        
+        <div class="checkbox-group">
+            <h3>Upload Project PDF:</h3>
+            <input type="text" id="project-name" placeholder="Project Name" style="padding: 8px; margin-right: 10px; width: 200px;">
+            <select id="project-industry" style="padding: 8px; margin-right: 10px;">
+                <option value="">Select Industry</option>
+                <option value="tech">Technology</option>
+                <option value="finance">Finance</option>
+                <option value="healthcare">Healthcare</option>
+                <option value="retail">Retail</option>
+                <option value="education">Education</option>
+            </select>
+            <input type="file" id="pdf-upload" accept=".pdf" style="margin-right: 10px;">
+            <button id="upload-project">Upload Project</button>
+        </div>
+    </div>
+    
+    <div id="gallery"></div>
+
+    <script>
+        // Store uploaded projects
+        var uploadedProjects = [];
+        var nextId = 1;
+        
+        // 1. Hide element when button is clicked
+        $('#create_new').click(function() {
+            $('#will_be_hidden').hide();
+        });
+        
+        // 2. Store filter conditions when checkboxes change
+        var filterConditions = [];
+        
+        $(".industry_checkbox").change(function() {
+            filterConditions = [];
+            $(".industry_checkbox:checked").each(function() {
+                filterConditions.push($(this).val());
+            });
+            
+            // Apply filters to existing gallery items
+            applyFilters();
+        });
+        
+        // 3. Handle PDF upload
+        $("#upload-project").click(function() {
+            var projectName = $("#project-name").val().trim();
+            var projectIndustry = $("#project-industry").val();
+            var fileInput = $("#pdf-upload")[0];
+            
+            // Validation
+            if (!projectName) {
+                alert("Please enter a project name");
+                return;
+            }
+            
+            if (!projectIndustry) {
+                alert("Please select an industry");
+                return;
+            }
+            
+            if (!fileInput.files || fileInput.files.length === 0) {
+                alert("Please select a PDF file");
+                return;
+            }
+            
+            var file = fileInput.files[0];
+            
+            // Check if it's a PDF
+            if (file.type !== "application/pdf") {
+                alert("Please upload a PDF file");
+                return;
+            }
+            
+            // Create a URL for the PDF file
+            var fileURL = URL.createObjectURL(file);
+            
+            // Add to uploaded projects
+            var project = {
+                id: nextId++,
+                name: projectName,
+                industry: projectIndustry,
+                fileName: file.name,
+                fileSize: (file.size / 1024).toFixed(2) + " KB",
+                fileURL: fileURL,
+                uploadDate: new Date().toLocaleDateString()
+            };
+            
+            uploadedProjects.push(project);
+            
+            // Add to gallery immediately
+            addProjectToGallery(project);
+            
+            // Clear form
+            $("#project-name").val("");
+            $("#project-industry").val("");
+            $("#pdf-upload").val("");
+            
+            // Apply current filters
+            applyFilters();
+            
+            alert("Project uploaded successfully!");
+        });
+        
+        // 4. Create gallery with filterable items (sample data)
+        $("#create-gallery").click(function() {
+            // Clear existing gallery
+            $("#gallery").empty();
+            
+            // Sample data for gallery items
+            var items = [
+                { id: 1001, industry: "tech", name: "Sample Tech Project", fileName: "sample.pdf" },
+                { id: 1002, industry: "finance", name: "Sample Finance Project", fileName: "sample.pdf" },
+                { id: 1003, industry: "healthcare", name: "Sample Healthcare Project", fileName: "sample.pdf" },
+                { id: 1004, industry: "retail", name: "Sample Retail Project", fileName: "sample.pdf" },
+                { id: 1005, industry: "tech", name: "Sample Tech Project 2", fileName: "sample.pdf" },
+                { id: 1006, industry: "education", name: "Sample Education Project", fileName: "sample.pdf" }
+            ];
+            
+            // Create gallery items for sample data
+            items.forEach(function(item) {
+                var $item = $('<div class="gallery-item"></div>');
+                $item.attr('data-industry', item.industry);
+                $item.attr('data-id', item.id);
+                
+                $item.html(
+                    '<div class="item-title">' + item.name + '</div>' +
+                    '<div class="item-info">Industry: ' + item.industry + '</div>' +
+                    '<div class="item-info">ID: ' + item.id + '</div>' +
+                    '<div class="item-info">File: ' + item.fileName + '</div>'
+                );
+                
+                $("#gallery").append($item);
+            });
+            
+            // Re-add uploaded projects
+            uploadedProjects.forEach(function(project) {
+                addProjectToGallery(project);
+            });
+            
+            // Apply current filters
+            applyFilters();
+        });
+        
+        // Function to add a project to the gallery
+        function addProjectToGallery(project) {
+            var $item = $('<div class="gallery-item"></div>');
+            $item.attr('data-industry', project.industry);
+            $item.attr('data-id', project.id);
+            
+            $item.html(
+                '<div class="item-title">' + project.name + '</div>' +
+                '<div class="item-info">Industry: ' + project.industry + '</div>' +
+                '<div class="item-info">File: ' + project.fileName + '</div>' +
+                '<div class="item-info">Size: ' + project.fileSize + '</div>' +
+                '<div class="item-info">Uploaded: ' + project.uploadDate + '</div>' +
+                '<a href="' + project.fileURL + '" target="_blank" class="pdf-link">📄 View PDF</a>'
+            );
+            
+            $("#gallery").append($item);
+        }
+        
+        // Function to apply filters to gallery items
+        function applyFilters() {
+            $(".gallery-item").each(function() {
+                var itemIndustry = $(this).data("industry");
+                
+                // If no filters are selected, show all items
+                if (filterConditions.length === 0) {
+                    $(this).removeClass("hidden");
+                } 
+                // Show item if it matches any selected filter
+                else if (filterConditions.includes(itemIndustry)) {
+                    $(this).removeClass("hidden");
+                } 
+                // Hide item if it doesn't match
+                else {
+                    $(this).addClass("hidden");
+                }
+            });
+        }
+    </script>
+</body>
+</html>
