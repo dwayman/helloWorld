@@ -6,7 +6,14 @@ from datetime import datetime as dt
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.instance_path, 'university.db')
+# Check if running on PythonAnywhere or locally
+if os.environ.get('PYTHONANYWHERE_DOMAIN'):
+    # PythonAnywhere path
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////home/dwayman/helloWorld/instance/university.db'
+else:
+    # Local development path
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.instance_path, 'university.db')
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'beyond_course_scope'
 db.init_app(app)
