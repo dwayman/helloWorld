@@ -23,26 +23,26 @@
       {% endif %}
     {% endwith %}
 
-    <form class="row g-3" action="/student/update/{{ student.student_id }}" method="post">
+    <form class="row g-3" action="{{ url_for('student_update', student_id=student['student_id']) }}" method="post">
 
       <div class="col-md-4">
         <label for="first_name" class="form-label"><strong>First Name</strong></label>
-        <input type="text" class="form-control" id="first_name" name="first_name" value="{{ student.first_name }}" required>
+        <input type="text" class="form-control" id="first_name" name="first_name" value="{{ student['first_name'] }}" required>
       </div>
 
       <div class="col-md-4">
         <label for="last_name" class="form-label"><strong>Last Name</strong></label>
-        <input type="text" class="form-control" id="last_name" name="last_name" value="{{ student.last_name }}" required>
+        <input type="text" class="form-control" id="last_name" name="last_name" value="{{ student['last_name'] }}" required>
       </div>
 
       <div class="col-md-4">
         <label for="email" class="form-label"><strong>Email</strong></label>
-        <input type="email" class="form-control" id="email" name="email" value="{{ student.email }}" required>
+        <input type="email" class="form-control" id="email" name="email" value="{{ student['email'] }}" required>
       </div>
 
       <div class="col-md-4">
         <label for="birth_date" class="form-label"><strong>Birth Date</strong></label>
-        <input type="date" class="form-control" id="birth_date" name="birth_date" value="{{ student.birth_date }}" required>
+        <input type="date" class="form-control" id="birth_date" name="birth_date" value="{{ student['birth_date'] }}" required>
       </div>
 
       <div class="col-md-4">
@@ -50,8 +50,8 @@
         <select class="form-select" id="major_id" name="major_id" required>
           <option value="">Choose...</option>
           {% for major in majors %}
-            <option value="{{ major.major_id }}" {% if major.major_id == student.major_id %}selected{% endif %}>
-              {{ major.major }}
+            <option value="{{ major['major_id'] }}" {% if major['major_id'] == student['major_id'] %}selected{% endif %}>
+              {{ major['major'] }}
             </option>
           {% endfor %}
         </select>
@@ -59,30 +59,132 @@
 
       <div class="col-md-4">
         <label for="num_credits_completed" class="form-label"><strong>Credits Completed</strong></label>
-        <input type="number" class="form-control" id="num_credits_completed" name="num_credits_completed" value="{{ student.num_credits_completed }}" required>
+        <input type="number" class="form-control" id="num_credits_completed" name="num_credits_completed" value="{{ student['num_credits_completed'] }}" required>
       </div>
 
       <div class="col-md-4">
         <label for="gpa" class="form-label"><strong>GPA</strong></label>
-        <input type="number" step="0.01" class="form-control" id="gpa" name="gpa" value="{{ student.gpa }}" required>
+        <input type="number" step="0.01" class="form-control" id="gpa" name="gpa" value="{{ student['gpa'] }}" required>
       </div>
 
       <div class="col-md-4">
         <div class="form-check">
-          <input class="form-check-input" type="checkbox" id="is_honors" name="is_honors" {% if student.is_honors %}checked{% endif %}>
+          <input class="form-check-input" type="checkbox" id="is_honors" name="is_honors" value="1" {% if student['is_honors'] == True %}checked{% endif %}>
           <label class="form-check-label" for="is_honors">
             Honors Student
           </label>
         </div>
       </div>
 
-      <div class="col-12">
+      <div class="col-12 text-center">
         <button type="submit" class="btn btn-primary">Update Student</button>
-        <a href="{{ url_for('student_list') }}" class="btn btn-secondary">Cancel</a>
+        &nbsp;
+        <a href="{{ url_for('student_list') }}" class="btn btn-secondary" role="button">Cancel</a>
       </div>
 
     </form>
 
+  </div>
+</div>
+
+<div class="row">
+  <div class="col text-center">
+    <a href="{{ url_for('student_list') }}" class="btn btn-secondary" role="button">Back to Student List</a>
+  </div>
+</div>
+
+{% endblock %}{% extends "base.html" %}
+
+{% block page_title %}
+    Edit Student
+{% endblock %}
+
+{% block page_head %}
+    Edit Student
+{% endblock %}
+
+{% block page_content %}
+
+<div class="row">
+  <div class="col">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert {{ 'alert-success' if category == 'success' else 'alert-danger' }}" role="alert">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form class="row g-3" action="{{ url_for('student_update', student_id=student['student_id']) }}" method="post">
+
+      <div class="col-md-4">
+        <label for="first_name" class="form-label"><strong>First Name</strong></label>
+        <input type="text" class="form-control" id="first_name" name="first_name" value="{{ student['first_name'] }}" required>
+      </div>
+
+      <div class="col-md-4">
+        <label for="last_name" class="form-label"><strong>Last Name</strong></label>
+        <input type="text" class="form-control" id="last_name" name="last_name" value="{{ student['last_name'] }}" required>
+      </div>
+
+      <div class="col-md-4">
+        <label for="email" class="form-label"><strong>Email</strong></label>
+        <input type="email" class="form-control" id="email" name="email" value="{{ student['email'] }}" required>
+      </div>
+
+      <div class="col-md-4">
+        <label for="birth_date" class="form-label"><strong>Birth Date</strong></label>
+        <input type="date" class="form-control" id="birth_date" name="birth_date" value="{{ student['birth_date'] }}" required>
+      </div>
+
+      <div class="col-md-4">
+        <label for="major_id" class="form-label"><strong>Major</strong></label>
+        <select class="form-select" id="major_id" name="major_id" required>
+          <option value="">Choose...</option>
+          {% for major in majors %}
+            <option value="{{ major['major_id'] }}" {% if major['major_id'] == student['major_id'] %}selected{% endif %}>
+              {{ major['major'] }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-md-4">
+        <label for="num_credits_completed" class="form-label"><strong>Credits Completed</strong></label>
+        <input type="number" class="form-control" id="num_credits_completed" name="num_credits_completed" value="{{ student['num_credits_completed'] }}" required>
+      </div>
+
+      <div class="col-md-4">
+        <label for="gpa" class="form-label"><strong>GPA</strong></label>
+        <input type="number" step="0.01" class="form-control" id="gpa" name="gpa" value="{{ student['gpa'] }}" required>
+      </div>
+
+      <div class="col-md-4">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="is_honors" name="is_honors" value="1" {% if student['is_honors'] == True %}checked{% endif %}>
+          <label class="form-check-label" for="is_honors">
+            Honors Student
+          </label>
+        </div>
+      </div>
+
+      <div class="col-12 text-center">
+        <button type="submit" class="btn btn-primary">Update Student</button>
+        &nbsp;
+        <a href="{{ url_for('student_list') }}" class="btn btn-secondary" role="button">Cancel</a>
+      </div>
+
+    </form>
+
+  </div>
+</div>
+
+<div class="row">
+  <div class="col text-center">
+    <a href="{{ url_for('student_list') }}" class="btn btn-secondary" role="button">Back to Student List</a>
   </div>
 </div>
 
