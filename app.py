@@ -6,7 +6,7 @@ from datetime import datetime as dt
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'university.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.instance_path, 'university.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'beyond_course_scope'
 db.init_app(app)
@@ -14,7 +14,7 @@ db.init_app(app)
 # Create tables if they don't exist
 with app.app_context():
     db.create_all()
-#Something to show a change
+
 
 @app.route('/student/view')
 def student_view_all():
