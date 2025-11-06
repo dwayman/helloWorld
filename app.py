@@ -220,9 +220,16 @@ def page_not_found(_):
     return render_template('404.html'), 404
 
 
+@app.route('/training')
+@login_required
+@role_required(['ADMIN', 'MANAGER'])
+def training():
+
+    return render_template('training.html')
+
+
 if __name__ == '__main__':
     app.run(debug=True)
-
 
 
 
