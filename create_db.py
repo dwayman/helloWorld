@@ -25,8 +25,8 @@ with app.app_context():
             'password': generate_password_hash('managerpw', method='pbkdf2:sha256'), 'role':'MANAGER'},
         {'username': 'admin', 'email': 'admin@umd.edu', 'first_name':'Crystal', 'last_name':'Ball',
             'password': generate_password_hash('adminpw', method='pbkdf2:sha256'), 'role':'ADMIN'},
-        {'username': 'dwayman', 'email': 'dwayman@umd.edu', 'first_name': 'Donovan', 'last_name': 'Wayman',
-         'password': generate_password_hash('studentpw', method='pbkdf2:sha256'), 'role': 'STUDENT'}
+        {'username': 'dwayman', 'email': 'dwayman@umd.edu', 'first_name':'Donovan', 'last_name':'Wayman',
+         'password': generate_password_hash('studentpw', method='pbkdf2:sha256'), 'role':'STUDENT'}
     ]
 
     for each_user in users:
